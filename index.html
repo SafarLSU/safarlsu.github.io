@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAFAR: Student Alliance for AI Reform</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400;1,700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #F5C518;
+  --gold-dim: #C8963E;
+  --purple: #2D1B5E;
+  --purple-mid: #461D7C;
+  --purple-bright: #6B35B8;
+  --cream: #F2EDD7;
+  --cream-dark: #E8DFC4;
+  --ink: #0E0A1A;
+  --white: #FAFAF5;
+  --red: #C0392B;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Archivo', sans-serif;
+  background: var(--ink);
+  color: var(--cream);
+  cursor: none;
+  overflow-x: hidden;
+}
+
+/* CUSTOM CURSOR */
+#cursor {
+  position: fixed;
+  width: 12px; height: 12px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: difference;
+}
+#cursor-trail {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: left 0.12s ease, top 0.12s ease, width 0.2s, height 0.2s;
+  opacity: 0.5;
+}
+body:has(a:hover) #cursor, body:has(button:hover) #cursor { width: 24px; height: 24px; }
+
+/* NOISE OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0.4;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2.5rem;
+  mix-blend-mode: normal;
+}
+nav::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(14,10,26,0.9), transparent);
+  z-index: -1;
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  text-decoration: none;
+}
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cream);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.2s;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -3px;
+  width: 0; height: 1px;
+  background: var(--gold);
+  transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-links a:hover::after { width: 100%; }
+
+/* ─── HERO ─── */
+#hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.hero-bg-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(8rem, 22vw, 22rem);
+  color: rgba(245,197,24,0.04);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+  animation: bgDrift 20s ease-in-out infinite alternate;
+}
+@keyframes bgDrift {
+  from { transform: translate(-50%, -50%) scale(1); }
+  to { transform: translate(-50%, -48%) scale(1.03); }
+}
+
+.scales-svg {
+  position: absolute;
+  right: -5%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 55vw;
+  max-width: 750px;
+  opacity: 0.06;
+  animation: scalesFloat 8s ease-in-out infinite;
+}
+@keyframes scalesFloat {
+  0%, 100% { transform: translateY(-50%) rotate(-2deg); }
+  50% { transform: translateY(-52%) rotate(2deg); }
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 7rem 2.5rem 5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-eyebrow {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: slideUp 0.6s 0.3s forwards;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 12vw, 13rem);
+  line-height: 0.88;
+  letter-spacing: 0.02em;
+  color: var(--cream);
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: slideUp 0.7s 0.5s forwards;
+}
+.hero-title span {
+  color: var(--gold);
+  display: block;
+}
+
+.hero-sub {
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(242,237,215,0.65);
+  max-width: 520px;
+  line-height: 1.75;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: slideUp 0.7s 0.7s forwards;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: slideUp 0.7s 0.9s forwards;
+}
+
+.btn-primary {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  padding: 0.9rem 2.2rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s, background 0.2s;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.btn-primary:hover { transform: scale(1.04); background: #ffe040; }
+
+.btn-secondary {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cream);
+  border: 1px solid rgba(242,237,215,0.3);
+  padding: 0.9rem 2.2rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+.hero-ticker {
+  background: var(--gold);
+  color: var(--ink);
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.6rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-inner {
+  display: inline-block;
+  animation: ticker 30s linear infinite;
+}
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── STATS BAR ─── */
+.stats-bar {
+  background: var(--purple);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 2px solid var(--gold);
+}
+.stat-item {
+  padding: 2.5rem 2rem;
+  border-right: 1px solid rgba(245,197,24,0.2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+.stat-item:last-child { border-right: none; }
+.stat-item:hover { background: rgba(245,197,24,0.08); }
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: var(--gold);
+  line-height: 1;
+  display: block;
+}
+.stat-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(242,237,215,0.55);
+  margin-top: 0.4rem;
+  display: block;
+}
+
+/* ─── WHY SECTION ─── */
+#why {
+  padding: 8rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+#why::before {
+  content: 'WHY';
+  position: absolute;
+  top: -2rem;
+  right: -1rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20vw;
+  color: rgba(245,197,24,0.03);
+  pointer-events: none;
+  line-height: 1;
+}
+.why-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 6rem;
+  align-items: start;
+}
+.why-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.why-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 5vw, 5rem);
+  line-height: 0.95;
+  color: var(--cream);
+  margin-bottom: 2rem;
+}
+.why-title em {
+  font-style: italic;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.pillar-row {
+  border-top: 1px solid rgba(245,197,24,0.2);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.25s;
+}
+.pillar-row:last-child { border-bottom: 1px solid rgba(245,197,24,0.2); }
+.pillar-row:hover { background: rgba(245,197,24,0.05); }
+.pillar-row.active { background: rgba(245,197,24,0.08); }
+
+.pillar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem;
+  gap: 1rem;
+}
+.pillar-word {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  color: var(--cream);
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+.pillar-row.active .pillar-word,
+.pillar-row:hover .pillar-word { color: var(--gold); }
+
+.pillar-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+  color: var(--gold);
+}
+.pillar-row.active .pillar-icon { transform: rotate(45deg); }
+
+.pillar-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s;
+  padding: 0 1.5rem;
+}
+.pillar-row.active .pillar-body {
+  max-height: 300px;
+  padding-bottom: 1.5rem;
+}
+.pillar-body p {
+  font-size: 0.9rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: rgba(242,237,215,0.7);
+  border-left: 2px solid var(--gold);
+  padding-left: 1rem;
+}
+
+/* ─── ISSUES / INTERACTIVE CARDS ─── */
+#issues {
+  background: var(--cream);
+  color: var(--ink);
+  padding: 8rem 2.5rem;
+  position: relative;
+}
+#issues::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 20px, var(--ink) 20px, var(--ink) 40px);
+}
+.issues-inner { max-width: 1200px; margin: 0 auto; }
+.issues-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--purple);
+  margin-bottom: 0.75rem;
+}
+.issues-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  color: var(--ink);
+  line-height: 0.9;
+  margin-bottom: 4rem;
+}
+.issues-title span { color: var(--purple-mid); }
+
+.issues-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5px;
+  background: rgba(14,10,26,0.12);
+  border: 1.5px solid rgba(14,10,26,0.12);
+}
+.issue-card {
+  background: var(--cream);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background 0.3s;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+.issue-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 0;
+  background: var(--purple);
+  transition: height 0.4s ease;
+  z-index: 0;
+}
+.issue-card:hover::before { height: 100%; }
+.issue-card:hover .issue-num,
+.issue-card:hover .issue-title,
+.issue-card:hover .issue-desc { color: var(--cream); }
+.issue-card:hover .issue-caret { color: var(--gold); transform: translateX(6px); }
+
+.issue-num {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--gold-dim);
+  margin-bottom: 1.5rem;
+  position: relative; z-index: 1;
+  transition: color 0.3s;
+}
+.issue-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  margin-bottom: 0.75rem;
+  line-height: 1.1;
+  position: relative; z-index: 1;
+  transition: color 0.3s;
+}
+.issue-desc {
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(14,10,26,0.65);
+  flex: 1;
+  position: relative; z-index: 1;
+  transition: color 0.3s;
+}
+.issue-caret {
+  position: relative; z-index: 1;
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  color: var(--purple-mid);
+  transition: color 0.3s, transform 0.3s;
+  align-self: flex-end;
+}
+
+/* ─── TIMELINE ─── */
+#timeline {
+  padding: 8rem 2.5rem;
+  position: relative;
+}
+.timeline-inner { max-width: 900px; margin: 0 auto; }
+.tl-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+}
+.tl-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  color: var(--cream);
+  line-height: 0.95;
+  margin-bottom: 4rem;
+}
+.tl-line {
+  position: relative;
+  padding-left: 2.5rem;
+}
+.tl-line::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--gold), rgba(245,197,24,0.1));
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 3rem;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+.tl-item.visible { opacity: 1; transform: translateX(0); }
+.tl-dot {
+  position: absolute;
+  left: -2.5rem;
+  top: 0.2rem;
+  width: 10px; height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+  transform: translateX(-4.5px);
+}
+.tl-item:hover .tl-dot { transform: translateX(-4.5px) scale(1.6); }
+.tl-date {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.tl-event {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  margin-bottom: 0.4rem;
+}
+.tl-detail {
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: rgba(242,237,215,0.55);
+  line-height: 1.65;
+  max-width: 600px;
+}
+
+/* ─── MANIFESTO / QUOTE ─── */
+#manifesto {
+  background: var(--gold);
+  color: var(--ink);
+  padding: 7rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+#manifesto::before {
+  content: '"';
+  position: absolute;
+  top: -3rem; left: -1rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30vw;
+  color: rgba(14,10,26,0.07);
+  line-height: 1;
+  pointer-events: none;
+}
+.manifesto-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.manifesto-quote {
+  font-family: 'Archivo', sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 2rem;
+}
+.manifesto-attr {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(14,10,26,0.55);
+}
+
+.word-cycle {
+  position: relative;
+  display: inline-block;
+  color: var(--purple);
+}
+
+/* ─── INITIATIVES ─── */
+#initiatives {
+  padding: 8rem 2.5rem;
+  background: var(--purple);
+}
+.init-inner { max-width: 1200px; margin: 0 auto; }
+.init-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+}
+.init-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  color: var(--cream);
+  margin-bottom: 3rem;
+  line-height: 0.95;
+}
+.init-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.init-card {
+  border: 1px solid rgba(245,197,24,0.2);
+  padding: 2rem;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.init-card:hover { border-color: var(--gold); }
+.init-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 0;
+  background: var(--gold);
+  transition: height 0.4s;
+}
+.init-card:hover::after { height: 100%; }
+.init-status {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2px;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+.status-active { background: rgba(245,197,24,0.15); color: var(--gold); }
+.status-passed { background: rgba(100,200,100,0.15); color: #7ECF7E; }
+.status-ongoing { background: rgba(107,53,184,0.3); color: #B899E8; }
+.init-card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  margin-bottom: 0.75rem;
+  line-height: 1.1;
+}
+.init-card-desc {
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(242,237,215,0.6);
+}
+
+/* ─── TEAM ─── */
+#team {
+  padding: 8rem 2.5rem;
+  background: var(--ink);
+}
+.team-inner { max-width: 1100px; margin: 0 auto; }
+.team-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+}
+.team-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  color: var(--cream);
+  margin-bottom: 3rem;
+  line-height: 0.95;
+}
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.member-card {
+  border: 1px solid rgba(242,237,215,0.1);
+  padding: 1.8rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.25s, transform 0.25s;
+  cursor: pointer;
+}
+.member-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+}
+.member-initial {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  color: rgba(245,197,24,0.15);
+  line-height: 1;
+  margin-bottom: 1rem;
+  transition: color 0.2s;
+}
+.member-card:hover .member-initial { color: rgba(245,197,24,0.4); }
+.member-name {
+  font-family: 'Archivo', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 0.3rem;
+}
+.member-title {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  line-height: 1.5;
+}
+.member-note {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(242,237,215,0.45);
+  margin-top: 0.75rem;
+  line-height: 1.6;
+}
+
+/* ─── JOIN CTA ─── */
+#join {
+  background: var(--cream);
+  padding: 8rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+#join::before {
+  content: 'JOIN';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30vw;
+  color: rgba(14,10,26,0.04);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.join-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.join-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 1rem;
+}
+.join-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 7vw, 7rem);
+  color: var(--ink);
+  line-height: 0.9;
+  margin-bottom: 1.5rem;
+}
+.join-sub {
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(14,10,26,0.65);
+  line-height: 1.75;
+  margin-bottom: 3rem;
+}
+.join-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-dark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  background: var(--ink);
+  color: var(--gold);
+  border: none;
+  padding: 0.9rem 2.5rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s, background 0.2s;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.btn-dark:hover { transform: scale(1.04); background: var(--purple); }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--ink);
+  border-top: 1px solid rgba(245,197,24,0.15);
+  padding: 3rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+.footer-tagline {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(242,237,215,0.35);
+  margin-top: 0.2rem;
+}
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+.footer-links a {
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(242,237,215,0.4);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--gold); }
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 900px) {
+  .why-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .issues-grid { grid-template-columns: 1fr; }
+  .init-cards { grid-template-columns: 1fr; }
+  .team-grid { grid-template-columns: repeat(2, 1fr); }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">SAFAR</a>
+  <ul class="nav-links">
+    <li><a href="#why">Why</a></li>
+    <li><a href="#issues">Issues</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#initiatives">Initiatives</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#join">Join</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <svg class="scales-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="30" r="4" fill="#F5C518"/>
+    <line x1="100" y1="30" x2="100" y2="170" stroke="#F5C518" stroke-width="1.5"/>
+    <line x1="40" y1="70" x2="160" y2="70" stroke="#F5C518" stroke-width="1.5"/>
+    <line x1="40" y1="70" x2="40" y2="110" stroke="#F5C518" stroke-width="1"/>
+    <line x1="160" y1="70" x2="160" y2="110" stroke="#F5C518" stroke-width="1"/>
+    <ellipse cx="40" cy="112" rx="22" ry="8" stroke="#F5C518" stroke-width="1.5"/>
+    <ellipse cx="160" cy="112" rx="22" ry="8" stroke="#F5C518" stroke-width="1.5"/>
+    <line x1="80" y1="170" x2="120" y2="170" stroke="#F5C518" stroke-width="2"/>
+  </svg>
+
+  <div class="hero-bg-text">REFORM</div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">LSU · Founding Chapter · Est. 2024</div>
+
+    <h1 class="hero-title">Student<br><span>Alliance</span><br>for AI Reform</h1>
+    <p class="hero-sub">Students driving university reform for the Age of AI. Because education that has lost its value to students is education that has failed its purpose.</p>
+    <div class="hero-ctas">
+      <a href="#join" class="btn-primary">Get Involved</a>
+      <a href="#why" class="btn-secondary">Read Our Why →</a>
+    </div>
+  </div>
+
+  <div class="hero-ticker">
+    <span class="ticker-inner">
+      &nbsp;⚖ AI SECOND CHANCE POLICY &nbsp;◆&nbsp; FAIR DISCIPLINARY PROCEDURES &nbsp;◆&nbsp; TRANSPARENT AI POLICIES &nbsp;◆&nbsp; STUDENT REPRESENTATION &nbsp;◆&nbsp; FREE AI LITERACY FOR ALL &nbsp;◆&nbsp; 500% INCREASE IN AI CASES SINCE 2022 &nbsp;◆&nbsp; EDUCATION MUST ADAPT &nbsp;◆&nbsp; ENTICING · ETHICAL · INVOLVED &nbsp;◆&nbsp; AI SECOND CHANCE POLICY &nbsp;◆&nbsp; FAIR DISCIPLINARY PROCEDURES &nbsp;◆&nbsp; TRANSPARENT AI POLICIES &nbsp;◆&nbsp; STUDENT REPRESENTATION &nbsp;◆&nbsp; FREE AI LITERACY FOR ALL &nbsp;◆&nbsp; 500% INCREASE IN AI CASES SINCE 2022 &nbsp;◆&nbsp; EDUCATION MUST ADAPT &nbsp;◆&nbsp; ENTICING · ETHICAL · INVOLVED &nbsp;◆&nbsp;
+    </span>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item reveal">
+    <span class="stat-num" data-target="500">0</span><span class="stat-num">%</span>
+    <span class="stat-label">Increase in AI conduct cases since 2022</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-num" data-target="238">0</span>
+    <span class="stat-label">Instagram followers & growing</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-num" data-target="3">0</span>
+    <span class="stat-label">Student Senate bills authored</span>
+  </div>
+  <div class="stat-item reveal">
+    <span class="stat-num" data-target="1">0</span>
+    <span class="stat-label">Founding chapter at LSU</span>
+  </div>
+</div>
+
+<!-- WHY -->
+<section id="why">
+  <div class="why-inner">
+    <div>
+      <div class="why-label reveal">01 — Our Why</div>
+      <h2 class="why-title reveal">Education<br>Must Be<br><em>Worth It.</em></h2>
+      <p class="reveal" style="font-size:0.9rem; font-weight:300; color:rgba(242,237,215,0.65); line-height:1.85; margin-top:1.5rem;">
+        AI has single-handedly eroded trust between faculty and students. But the real question — the one that refuses to be asked — is <strong style="color:var(--cream);">why students are offloading their education to an LLM in the first place.</strong>
+        <br><br>
+        University education has lost its perceived value to students. If it was valued, they would not be using ChatGPT for their assignments inappropriately. The brain takes the path of least resistance; if you perceive a task as unnecessary and have the means, you will automate it.
+        <br><br>
+        To adapt higher education to the Age of AI, we must make education more <strong style="color:var(--gold);">Enticing, Ethical, and Involved.</strong>
+      </p>
+    </div>
+
+    <div class="pillars reveal">
+      <div class="pillar-row active" onclick="togglePillar(this)">
+        <div class="pillar-head">
+          <span class="pillar-word">Enticing</span>
+          <span class="pillar-icon">+</span>
+        </div>
+        <div class="pillar-body">
+          <p>Enticing education involves engaging, relevant coursework and teaching methods that students and faculty both find meaningful. When students see the value in what they're learning, the incentive to cut corners disappears. We push for curriculum reform that keeps pace with a rapidly changing world.</p>
+        </div>
+      </div>
+      <div class="pillar-row" onclick="togglePillar(this)">
+        <div class="pillar-head">
+          <span class="pillar-word">Ethical</span>
+          <span class="pillar-icon">+</span>
+        </div>
+        <div class="pillar-body">
+          <p>Ethical education necessitates transparent policies and fair procedures regarding LLM usage. Students deserve to know exactly what constitutes a violation — and what doesn't. No student should fear that their complex sentence structure or thorough answer will be flagged as AI-generated.</p>
+        </div>
+      </div>
+      <div class="pillar-row" onclick="togglePillar(this)">
+        <div class="pillar-head">
+          <span class="pillar-word">Involved</span>
+          <span class="pillar-icon">+</span>
+        </div>
+        <div class="pillar-body">
+          <p>Involved education means students are engaged on all matters of AI in higher education relevant to them. Students, as young adults and the ones actually learning, have a valuable and unique perspective. If you want to know why students offload work to AI — ask them. We're here to make sure they're heard.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ISSUES -->
+<section id="issues">
+  <div class="issues-inner">
+    <div class="issues-label reveal">02 — The Problems We're Solving</div>
+    <h2 class="issues-title reveal">Three Cracks<br><span>at the Foundation</span></h2>
+    <div class="issues-grid reveal">
+      <div class="issue-card">
+        <div class="issue-num">Problem 01</div>
+        <div class="issue-title">Eroded Trust</div>
+        <div class="issue-desc">AI has fractured the faculty-student relationship. Instructors are on constant lookout for cheating, while students fear being falsely accused for work they did themselves — including complex sentences or thorough answers.</div>
+        <div class="issue-caret">→</div>
+      </div>
+      <div class="issue-card">
+        <div class="issue-num">Problem 02</div>
+        <div class="issue-title">Opaque Policies</div>
+        <div class="issue-desc">There is no publicly available documentation of what does and does not count as evidence of inappropriate AI usage. This creates an environment of fear where students don't know the rules they're being held to.</div>
+        <div class="issue-caret">→</div>
+      </div>
+      <div class="issue-card">
+        <div class="issue-num">Problem 03</div>
+        <div class="issue-title">Coercive Process</div>
+        <div class="issue-desc">Informal resolutions offered to accused students function as coercion — even innocent students feel pressured to accept "lighter" punishments rather than risk a formal review. Due process is being bypassed.</div>
+        <div class="issue-caret">→</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="timeline-inner">
+    <div class="tl-label reveal">03 — The Moment We're In</div>
+    <h2 class="tl-title reveal">How We Got Here</h2>
+    <div class="tl-line">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">November 2022</div>
+        <div class="tl-event">ChatGPT Launches Publicly</div>
+        <div class="tl-detail">OpenAI releases GPT-3.5 to the public. Overnight, a click-away tool that can write any assignment lands in the hands of every college student in America.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">April 2023</div>
+        <div class="tl-event">Turnitin Enables AI Detection</div>
+        <div class="tl-detail">Turnitin unveils its AI-detecting function. LSU's SAA sees a nearly 500% spike in academic misconduct reports — from 28 students found culpable in Spring 2022 to 136 in Spring 2023.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2024</div>
+        <div class="tl-event">SAFAR Founded at LSU</div>
+        <div class="tl-detail">Jude Terrell, Aaron Lomastro, and founding members establish SAFAR (the Student Alliance for AI Reform) as LSU's first student organization dedicated to university AI reform.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">January 2025</div>
+        <div class="tl-event">First Chapter Meeting</div>
+        <div class="tl-detail">SAFAR holds its inaugural chapter meeting discussing AI cheating accusations, expanding its membership and launching its Google Form to collect student AI misconduct experiences.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2025</div>
+        <div class="tl-event">Student Senate Legislation</div>
+        <div class="tl-detail">Aaron Lomastro and Benjamin Goldstein co-author Student Senate bills, including a bill requesting a free AI fundamentals certificate for all LSU students, in contrast to LSU's existing $10,995 AI Bootcamp.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">March 18, 2026</div>
+        <div class="tl-event">Soil & Silicon Event</div>
+        <div class="tl-detail">SAFAR partners with Geaux Green to host "AI's Environmental Impact in Louisiana: Where Are We Headed?" featuring LSU professor Supratik Mukhopadhyay, Ph.D. at the Greek Theater.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--gold-dim); box-shadow: 0 0 0 4px rgba(245,197,24,0.2);"></div>
+        <div class="tl-date">Now</div>
+        <div class="tl-event">The Work Continues</div>
+        <div class="tl-detail">SAFAR is actively pushing for an AI Second Chance Policy, transparent SAA procedures, and deeper student involvement in AI governance at LSU and beyond.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO PULL QUOTE -->
+<section id="manifesto">
+  <div class="manifesto-inner">
+    <p class="manifesto-quote">"First and foremost, we want to <span class="word-cycle" id="wordCycle">educate</span> people on AI issues, so that when they make their choices regarding AI, they have the most information possible at their disposal."</p>
+    <div class="manifesto-attr">Jude Terrell, President · SAFAR</div>
+  </div>
+</section>
+
+<!-- INITIATIVES -->
+<section id="initiatives">
+  <div class="init-inner">
+    <div class="init-label reveal">04 — Active Initiatives</div>
+    <h2 class="init-title reveal">What We're<br>Fighting For</h2>
+    <div class="init-cards reveal">
+      <div class="init-card">
+        <span class="init-status status-active">Active Campaign</span>
+        <div class="init-card-title">AI Second Chance Policy</div>
+        <div class="init-card-desc">An automatic, lighter informal resolution for first-time AI misconduct cases. Students who made a mistake get a chance to reflect and reform. Students who are innocent get a way out, without the coercive pressure of the current process. Excludes exam and major paper violations to preserve academic integrity.</div>
+      </div>
+      <div class="init-card">
+        <span class="init-status status-active">Active Campaign</span>
+        <div class="init-card-title">Transparent SAA AI Policy</div>
+        <div class="init-card-desc">Demanding SAA publish a publicly available policy establishing what constitutes valid and invalid evidence in AI misconduct cases. AI detector scores alone should never be sufficient for a finding of guilt. Students deserve to know the rules before they're judged by them.</div>
+      </div>
+      <div class="init-card">
+        <span class="init-status status-passed">Legislation Authored</span>
+        <div class="init-card-title">Free AI Literacy Certificate</div>
+        <div class="init-card-desc">Student Senate legislation requesting a free online AI fundamentals certificate for all LSU students, covering basic AI use, ethics, and legal considerations. A direct contrast to LSU Online's existing AI Bootcamp, priced at $10,995.</div>
+      </div>
+      <div class="init-card">
+        <span class="init-status status-ongoing">Ongoing</span>
+        <div class="init-card-title">Student Body Education & Outreach</div>
+        <div class="init-card-desc">Peer-to-peer education to keep students out of trouble: what's allowed, what's not, and how to protect yourself if accused. We collect student misconduct experiences via Google Form and partner with organizations like Geaux Green to expand our reach.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="team-inner">
+    <div class="team-label reveal">05 — Leadership</div>
+    <h2 class="team-title reveal">The Founding Team</h2>
+    <div class="team-grid reveal">
+      <div class="member-card">
+        <div class="member-initial">JT</div>
+        <div class="member-name">Jude Terrell</div>
+        <div class="member-title">President · Founding Member</div>
+        <div class="member-note">Junior, Political Science. The vision behind SAFAR, pushing for education that is enticing, ethical, and involved.</div>
+      </div>
+      <div class="member-card">
+        <div class="member-initial">AL</div>
+        <div class="member-name">Aaron Lomastro</div>
+        <div class="member-title">Student Senator · Bill Co-Author</div>
+        <div class="member-note">Personally experienced AI misconduct allegations. Authored Student Senate legislation requiring AI literacy for case workers.</div>
+      </div>
+      <div class="member-card">
+        <div class="member-initial">PF</div>
+        <div class="member-name">Peyton Falterman</div>
+        <div class="member-title">Media Director</div>
+        <div class="member-note">Shapes SAFAR's voice and visual identity, driving awareness of the organization's mission across social media and beyond.</div>
+      </div>
+      <div class="member-card">
+        <div class="member-initial">AK</div>
+        <div class="member-name">Anderson Krupala</div>
+        <div class="member-title">Event Planner</div>
+        <div class="member-note">Freshman, International Studies & Honors. Focused on facilitating understanding between students and faculty.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOIN -->
+<section id="join">
+  <div class="join-inner">
+    <div class="join-label reveal">06 — Get Involved</div>
+    <h2 class="join-title reveal">Be Part<br>of the Reform</h2>
+    <p class="join-sub reveal">SAFAR is the founding chapter. If higher education is going to adapt to the Age of AI in a way that is fair to students, students have to be in the room where it happens. Come be in the room.</p>
+    <div class="join-btns reveal">
+      <a href="https://safarlsu.org" target="_blank" class="btn-dark">Visit Our Website</a>
+      <a href="https://www.instagram.com/safarlsu/" target="_blank" class="btn-dark" style="background:var(--purple-mid);">Follow @safarlsu</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">SAFAR</div>
+    <div class="footer-tagline">Student Alliance for AI Reform · LSU Founding Chapter · Baton Rouge, LA</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="https://safarlsu.org" target="_blank">Website</a></li>
+    <li><a href="https://www.instagram.com/safarlsu/" target="_blank">Instagram</a></li>
+    <li><a href="#why">Our Why</a></li>
+    <li><a href="#initiatives">Initiatives</a></li>
+  </ul>
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursor-trail');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  trail.style.left = e.clientX + 'px';
+  trail.style.top = e.clientY + 'px';
+});
+
+// PILLAR ACCORDION
+function togglePillar(row) {
+  const isActive = row.classList.contains('active');
+  document.querySelectorAll('.pillar-row').forEach(r => r.classList.remove('active'));
+  if (!isActive) row.classList.add('active');
+}
+
+// SCROLL REVEAL
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// TIMELINE REVEAL
+const tlObserver = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 120);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.tl-item').forEach(el => tlObserver.observe(el));
+
+// COUNTER ANIMATION
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target);
+  const duration = 1800;
+  const start = performance.now();
+  const update = (now) => {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target).toLocaleString();
+    if (progress < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('[data-target]').forEach(animateCounter);
+      counterObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelector('.stats-bar') && counterObserver.observe(document.querySelector('.stats-bar'));
+
+// WORD CYCLE IN MANIFESTO
+const words = ['educate', 'empower', 'protect', 'involve', 'reform', 'educate'];
+let wordIdx = 0;
+const cycleEl = document.getElementById('wordCycle');
+setInterval(() => {
+  wordIdx = (wordIdx + 1) % words.length;
+  cycleEl.style.opacity = '0';
+  cycleEl.style.transform = 'translateY(-8px)';
+  cycleEl.style.transition = 'opacity 0.3s, transform 0.3s';
+  setTimeout(() => {
+    cycleEl.textContent = words[wordIdx];
+    cycleEl.style.opacity = '1';
+    cycleEl.style.transform = 'translateY(0)';
+  }, 320);
+}, 2000);
+
+// PARALLAX ON HERO BG TEXT
+document.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const bgText = document.querySelector('.hero-bg-text');
+  if (bgText) bgText.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.3}px))`;
+});
+</script>
+</body>
+</html>
